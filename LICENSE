@@ -1,38 +1,3 @@
-## Odin
-
-This is a simple sample application built off the Ionic framework that adds some useful tools for working with Ionic and building hybrid applications. This application was built for Prairie Dev Con 2016 in order to introduce developers to the idea of building hybrid apps.
-
-### Slides
-
-Coming soon
-
-### Video
-
-Coming soon
-
-### Requirements
-
-- [NodeJS](https://nodejs.org/)
-- [PhantomJS](http://phantomjs.org/)
-- [GulpJS](http://gulpjs.com/)
-- [Cordova](https://cordova.apache.org/)
-- [Ionic](http://ionicframework.com/)
-
-### Usage
-
-With Node and PhantomJS installed (via a package manager or otherwise):
-
-- `npm install -g gulp cordova ionic` to install global dependencies
-- `npm install` to install project dependencies
-- `ionic serve` as usual
-- `gulp spec` for single test suite run
-- `gulp guard` for guard-like continuous testing
-- Refer to `gulpfile.js` for more commands
-- Refer to `spec/karma.conf.js` for test config
-
-### License
-
-```
 Copyright (c) 2016 Bit Space Development Ltd.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -52,4 +17,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-```
