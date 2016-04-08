@@ -1,0 +1,1 @@
+odinApp.controllers.controller('DashCtrl', function($scope) {});

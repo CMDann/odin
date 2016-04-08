@@ -1,22 +1,32 @@
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var bower = require('bower');
-var concat = require('gulp-concat');
-var sass = require('gulp-sass');
-var minifyCss = require('gulp-minify-css');
-var rename = require('gulp-rename');
-var sh = require('shelljs');
+var gulp      = require('gulp'),
+    gutil     = require('gulp-util'),
+    bower     = require('bower'),
+    concat    = require('gulp-concat'),
+    sass      = require('gulp-sass'),
+    minifyCss = require('gulp-minify-css'),
+    minifyJs  = require('gulp-uglify'),
+    path      = require('path'),
+    key       = require('keypress'),
+    karma     = require('karma'),
+    rename    = require('gulp-rename'),
+    sh        = require('shelljs');
 
 var paths = {
-  sass: ['./scss/**/*.scss']
+  sass:   ['./scss/**/*.s?ss'],
+  js:     ['./js/**/*.js'],
+  app:    ['./www/js/**/*.js'],
+  spec:   ['./spec/support/**/*.js', './spec/**/*_spec.js']
 };
 
-gulp.task('default', ['sass']);
+gulp.task('default', ['assets', 'spec']);
+
+gulp.task('assets', ['sass', 'js']);
 
 gulp.task('sass', function(done) {
   gulp.src('./scss/ionic.app.scss')
-    .pipe(sass())
-    .on('error', sass.logError)
+    .pipe(sass({
+      errLogToConsole: true
+    }))
     .pipe(gulp.dest('./www/css/'))
     .pipe(minifyCss({
       keepSpecialComments: 0
@@ -26,8 +36,49 @@ gulp.task('sass', function(done) {
     .on('end', done);
 });
 
+gulp.task('js', function(done) {
+  gulp.src(paths.js)
+    .pipe(concat('ionic.app.js'))
+    .pipe(gulp.dest('./www/js'))
+    .pipe(minifyJs({
+      mangle: false
+    }))
+    .pipe(rename({ extname: '.min.js' }))
+    .pipe(gulp.dest('./www/js'))
+    .on('end', done);
+});
+
+gulp.task('spec', function(done) {
+  new karma.Server({
+    configFile: path.resolve('./spec/karma.conf.js'),
+    singleRun: true
+  }, function() {
+    sh.rm('-rf', './spec/tmp');
+    done();
+  }).start();
+});
+
 gulp.task('watch', function() {
-  gulp.watch(paths.sass, ['sass']);
+  gulp.watch(paths.sass,   ['sass']);
+  gulp.watch(paths.js, ['js']);
+});
+
+gulp.task('guard', function() {
+  key(process.stdin);
+  process.stdin.on('keypress', function (ch, key) {
+    console.log();
+    if (key.name == 'return') {
+      console.log('Running all specs...');
+      gulp.start('spec');
+    } else if (key.name == 'c' && key.ctrl) {
+      console.log('Bye bye...');
+      process.stdin.pause();
+      process.exit();
+    }
+  });
+  process.stdin.setRawMode(true);
+  process.stdin.resume();
+  gulp.watch([paths.spec, paths.app], ['spec']);
 });
 
 gulp.task('install', ['git-check'], function() {
@@ -38,7 +89,7 @@ gulp.task('install', ['git-check'], function() {
 });
 
 gulp.task('git-check', function(done) {
-  if (!sh.which('git')) {
+  if (! sh.which('git')) {
     console.log(
       '  ' + gutil.colors.red('Git is not installed.'),
       '\n  Git, the version control system, is required to download Ionic.',
